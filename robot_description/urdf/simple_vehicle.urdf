@@ -1,0 +1,158 @@
+<?xml version="1.0" ?>
+<robot name="vehicle">
+
+  <material name="red">
+    <color rgba="1.0 0.0 0.0 1.0"/>
+  </material>
+  <material name="green">
+    <color rgba="0.0 1.0 0.0 1.0"/>
+  </material>
+  <material name="blue">
+    <color rgba="0.0 0.0 1.0 1.0"/>
+  </material>
+
+  <link name="base_link">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+<!--
+        <box size="1.0 1.0 0.2"/>
+-->
+        <cylinder length="1.0" radius="0.1"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <geometry>
+<!--
+        <box size="1.0 1.0 0.2"/>
+-->
+        <cylinder length="1.0" radius="0.1"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial><mu1 value="1.0"/>
+    <mu2 value="1.0"/>
+    <kp value="10000000.0"/>
+    <kd value="1.0"/>
+    <fdir1 value="1 0 0"/>
+  </link>
+  <gazebo reference="base_link">
+    <turnGravityOff>true</turnGravityOff>
+    <material>Gazebo/Silver</material>
+  </gazebo>
+
+<!-- Front Wheel Difinition -->
+  <link name="left_wheel">
+    <collision>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.2" radius="1.0"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.2" radius="1.0"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+  <gazebo reference="left_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <joint name="base_link_to_left_wheel" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin rpy="0 0 0" xyz="0 0.7 0"/>
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+  </joint>
+  <transmission name="base_link_to_left_wheel_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="base_link_to_left_wheel">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="base_link_to_left_wheel_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <link name="right_wheel">
+    <collision>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.2" radius="1.0"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="0.2" radius="1.0"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+  <gazebo reference="right_wheel">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <joint name="base_link_to_right_wheel" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin rpy="0 0 0" xyz="0 -0.7 0"/>
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+  </joint>
+  <transmission name="base_link_to_right_wheel_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="base_link_to_right_wheel">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="base_link_to_right_wheel_motor">
+      <hardwareInterface>EffortJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+<!-- Gazebo Configuration -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/simple_vehicle</robotNamespace>
+    </plugin>
+    <plugin filename="libgazebo_ros_diff_drive.so" name="differential_drive_controller_front">
+      <rosDebugLevel>Debug</rosDebugLevel>
+      <publishWheelTF>True</publishWheelTF>
+      <publishTf>1</publishTf>
+      <publishWheelJointState>true</publishWheelJointState>
+      <alwaysOn>true</alwaysOn>
+      <updateRate>100.0</updateRate>
+      <leftJoint>base_link_to_left_wheel</leftJoint>
+      <rightJoint>base_link_to_right_wheel</rightJoint>
+      <wheelSeparation>1.4</wheelSeparation>
+      <wheelDiameter>1.0</wheelDiameter>
+      <broadcastTF>1</broadcastTF>
+      <wheelTorque>30</wheelTorque>
+      <wheelAcceleration>1.8</wheelAcceleration>
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryFrame>odom</odometryFrame>
+      <odometryTopic>odom</odometryTopic>
+      <robotBaseFrame>base_link</robotBaseFrame>
+    </plugin>
+  </gazebo>
+
+</robot> 
