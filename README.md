@@ -22,11 +22,11 @@ The calibration was done following this [tutorial](http://wiki.ros.org/camera_ca
 
 Node publishing images over ROS:
 ```
-rosrun cv_camera cv_camera_node 
+rosrun usb_cam usb_cam_node 
 ```
 To start the calibration you will need to load the image topics that will be calibrated: 
 ```
-rosrun camera_calibration cameracalibrator.py --size 9x7 --square 0.25 image:=/cv_camera/image_raw camera:=/cv_camera  --no-service-check
+rosrun camera_calibration cameracalibrator.py --size 9x7 --square 0.025 image:=/usb_cam/image_raw camera:=/usb_cam  --no-service-check
 ```
 Interface
 
